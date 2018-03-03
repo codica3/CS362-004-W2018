@@ -1,0 +1,188 @@
+BugsInTeammateCode.txt
+==============================
+
+Title:    Error 1 cannot compile dominion.c
+
+Class:    Serious Bug
+
+Date:     February 28, 2018      
+Reported By:   Cody Kelley
+Email:      kelleyc@oregonstate.edu
+
+
+Product:  dominion.c            Version:   torresmp
+Platform: Linux                 Version:   OSU flip server 3.10.0-693.11.1.el7.x86_64 #1 SMP
+Browser:  N/A                   Version:
+URL:      N/A  
+
+Is it reproducible: Yes
+
+Description
+===========
+Could not compile dominion.c because of syntax error in the adventurerCard function.  This function is a refactored function written by my teammate.  This bug was caught when trying to compile and run my first unit test on his code.
+
+
+Steps to Produce/Reproduce
+--------------------------
+Any attempt to compile dominion.c will give this error.  This includes when using a make command or trying to directly compile.
+
+Example: make dominion --> error
+Example: gcc  -o dominion -g dominion.c -Wall -fpic -coverage -lm --> error
+
+
+Expected Results
+----------------
+Expecting dominion.c to compile successfully with no errors.
+
+
+Actual Results
+--------------
+Code does not compile.  Gives following error message:
+
+gcc -c dominion.c -g  -Wall -fpic -coverage -lm
+dominion.c: In function ‘adventurerCard’:
+dominion.c:673:42: error: lvalue required as left operand of assignment
+     if (cardDrawn == copper || cardDrawn = silver || cardDrawn == gold) {
+                                          ^
+make: *** [dominion.o] Error 1
+
+
+Other Information
+-----------------
+I could not proceed with my testing if dominion.c would not compile.  Needed to go into source code dominion.c, locate the adventurerCard function, go to syntax error on line 673 and change the second part of the conditional or statement.
+	cardDrawn = silver should be cardDrawn == silver
+Once this adjustment to code was made, dominion.c successfully compiled.
+
+==============================
+
+Title:    isGameOver not implemented correctly
+
+Class:    Improper functionality
+
+Date:     February 28, 2018      
+Reported By:   Cody Kelley
+Email:      kelleyc@oregonstate.edu
+
+
+Product:  dominion.c            Version:   torresmp
+Platform: Linux                 Version:   OSU flip server 3.10.0-693.11.1.el7.x86_64 #1 SMP
+Browser:  N/A                   Version:
+URL:      N/A       
+
+Is it reproducible: Yes
+
+Description
+===========
+The isGameOver function will not properly detect game ending conditions if the supply piles for either card 25 or 26 are 0.  Dominion rules trigger a game ending condition if any 3 supply piles are empty.  The isGameOver function does not loop properly through all possible supply piles and therefore does not take into account piles 25 and 26 when evaluating for game over.  
+
+
+Steps to Produce/Reproduce
+--------------------------
+To produce this error, specifically test the isGameOver function checking for supply pile(s) 25 and 26 to be 0 along with any other piles for a total of 3 supply piles being depleted.  An easy way to reproduce this bug is to run my unittest2.  It picks up the bug every time by illustrating the failed test when checking supply piles 24, 25, and 26.
+
+
+Expected Results
+----------------
+Expecting isGameOver to trigger game ending condition by returning a value of 1 when either the province pile is empty or any 3 supply piles are empty.  A non-game ending condition returns a value of 0.
+
+
+Actual Results
+--------------
+Function works properly for province pile.  Function does not correctly return game ending value of 1 when either card 25 or card 26 is depleted.
+
+
+Other Information
+-----------------
+Line 402 looks suspicious:
+
+402   for (i = 0; i < 25; i++)
+
+
+==============================
+
+Title:    Smithy card not implemented correctly
+
+Class:    Improper functionality
+
+Date:     February 28, 2018      
+Reported By:   Cody Kelley
+Email:      kelleyc@oregonstate.edu
+
+
+Product:  dominion.c            Version:   torresmp
+Platform: Linux                 Version:   OSU flip server 3.10.0-693.11.1.el7.x86_64 #1 SMP
+Browser:  N/A                   Version:
+URL:      N/A       
+
+Is it reproducible: Yes
+
+Description
+===========
+Smithy card draws the incorrect number of cards.  Dominion rules state that playing smithy card should draw 3 cards from deck.  Player hand count consistently shows an extra card and deck count consistently shows one less card than it should contain.
+
+
+Steps to Produce/Reproduce
+--------------------------
+Any call to play the smithy card will produce this result.  To specifically see the results of calling smithy card, my cardtest1 or my randomtestcard1 tests can be called which both test the smithy card (unit test and random test respectively).  The incorrect number of cards in the player hand and player deck can consistently be observed.
+
+
+Expected Results
+----------------
+Expecting current player's hand to contain 3 extra cards and their deck count to contain 3 less cards.
+
+
+Actual Results
+--------------
+Current player's hand contains 1 extra card than is expected and their deck count contains 1 less card than expected.  It appears the smithy function is drawing 4 cards from the deck instead of 3.
+
+
+Other Information
+-----------------
+Line 652 looks suspicious:
+
+652   for (i = 0; i <= 3; i++) {
+653      drawCard(currentPlayer, state);
+654   }
+
+==============================
+
+Title:    Adventurer card is not played properly
+
+Class:    Improper functionality
+
+Date:     February 28, 2018      
+Reported By:   Cody Kelley
+Email:      kelleyc@oregonstate.edu
+
+
+Product:  dominion.c            Version:   torresmp
+Platform: Linux                 Version:   OSU flip server 3.10.0-693.11.1.el7.x86_64 #1 SMP
+Browser:  N/A                   Version:
+URL:      N/A       
+
+Is it reproducible: Yes
+
+Description
+===========
+When the adventurer card is played, it does not properly "play" in the code.  It is never added to the played pile in order to be discarded when the turn is over.
+
+
+Steps to Produce/Reproduce
+--------------------------
+Any call to the adventurer card will produce this result.  To specifically see the results of calling the adventurer card, my cardtest2 and randomtestadventurer tests can be called which both test the adventurer card (unit and random testing respectively).  The incorrect number of played card count can be consistently observed.
+
+
+Expected Results
+----------------
+Expecting the adventurer card to be added to played card count and discarded after the player turn ends.
+
+
+Actual Results
+--------------
+Adventurer card is not added to the played card count resulting in an incorrect number of played cards following the player turn.  Only the cards that were drawn during the treasure card reveals appear to be properly handled as played and discarded.
+
+
+Other Information
+-----------------
+The implementation of adventurerCard() function is suspicious.
+
